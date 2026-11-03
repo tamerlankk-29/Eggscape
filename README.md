@@ -16,3 +16,7 @@ collects coins to open the finish and defeats the cow boss.
 Joystick: move · JUMP: jump · FIRE: shoot · II: pause
 
 Asset sources and licenses are listed in README.txt. AI usage is logged in AI_LOG.txt.
+## Playtest notes (by Temirlan)
+- Rolling feels fun, but long jumps on Level 2 are hard with the joystick
+- Pause button is easy to reach; JUMP and FIRE are close, maybe move FIRE higher
+- Idea for the cut list: no skins shop, focus on levels
