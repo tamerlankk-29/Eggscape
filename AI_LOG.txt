@@ -22,3 +22,6 @@ Claude · заменить платформы на блоки земли · по
 Claude · баг: монеты лежали плашмя · Claude сам исправил файл анимации Coin_Spin.anim (поворот X 90 → 0)
 Claude · баг: монеты и предметы под платформами · Claude проверил сцену и нашёл, что объект Level стоял не в нуле · сделал Reset сам и поправил координаты
 
+=== Assignment 8-9: Mobile Game Kickoff ===
+Claude (chat) · step-by-step guide · asked how to set up Canvas Scaler, SafeArea, pause, GitHub repo and PR · got instructions and the PauseMenu script · typed the scripts myself, built the UI in Unity myself, set up the repo and PR myself
+SafeArea.cs — taken from Lecture 8-9 (teacher's code)
