@@ -20,6 +20,15 @@ public class Bullet : MonoBehaviour
             return;
         }
 
+        // НОВОЕ: попали во врага (лошадь, лама, свинья) - минус жизнь врагу
+        EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
+        if (enemy != null)
+        {
+            enemy.TakeHit();
+            Destroy(gameObject);
+            return;
+        }
+
         Hazard h = other.GetComponent<Hazard>();
         if (h != null && !(h is Heart))
         {
