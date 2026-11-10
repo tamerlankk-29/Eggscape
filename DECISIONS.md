@@ -6,4 +6,4 @@
 2026-11-10  Bug: the llama was throwing tomatoes. The Spit prefab was a copy of Tomato and kept the tomato model - replaced its mesh with a green sphere (SpitGreen) and checked that ShooterAI uses Spit, not Tomato.
 2026-11-10  Bug: death explosions stayed in the scene forever. EnemyHealth spawned the Explosion prefab but never removed it - added Destroy(fx, 2f) (effectLifeTime field).
 2026-11-10  Claude's animation steps assumed Pig.fbx has Walk and Run clips; it only has Idle and Jump. Made Walk and Run states from the Jump clip (speed 0.6 / 1.5) in a new PigEnemyAnim. New *EnemyAnim controllers, so the old horse's HorseAnim is not touched.
-2026-11-1_  Playtest: the egg starts right in front of the arena so testers meet the enemies at once. <name> <N> tries, <name> <N> tries. <field> <old> -> <new>, <field> <old> -> <new>. Now <N> tries.
+2026-11-10  Playtest: the egg starts right in front of the arena so testers meet the enemies at once. Aidana 8 tries, Temirlan 4 tries.
