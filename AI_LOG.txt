@@ -25,3 +25,13 @@ Claude · баг: монеты и предметы под платформами
 === Assignment 8-9: Mobile Game Kickoff ===
 Claude (chat) · step-by-step guide · asked how to set up Canvas Scaler, SafeArea, pause, GitHub repo and PR · got instructions and the PauseMenu script · typed the scripts myself, built the UI in Unity myself, set up the repo and PR myself
 SafeArea.cs — taken from Lecture 8-9 (teacher's code)
+
+=== Assignment 10: Three Enemy Types ===
+Claude (chat) · step-by-step guide · asked how to make three enemy types (Patroller, Shooter, Charger) with a state machine, sight and NavMesh · got a guide with arena coordinates and the scripts EnemySight, EnemyHealth, Billboard, EnemyProjectile, PatrollerAI, ShooterAI, ChargerAI plus changes to Spawner and Bullet · pasted the scripts myself, built the arena, NavMesh, the three enemies, prefabs and animators in Unity myself
+Claude · arena layout · Claude read Level2.unity and the animal FBX files on my PC to get platform coordinates and model sizes · placed cover cubes, waypoints, coins and enemies myself
+Claude · wood material on cover cubes · dragging woodDark out of the FBX did not work · got the way through Mesh Renderer -> Element 0 picker · set it myself
+Claude · bug: the llama threw tomatoes · Spit prefab was a copy of Tomato and kept its model · replaced the mesh with a green sphere (SpitGreen) myself
+Claude · bug: death explosions stayed in the scene · got Destroy(fx, 2f) for EnemyHealth · pasted it myself
+Claude · animations: Pig.fbx has only Idle and Jump, the guide expected Walk and Run · got the idea to make Walk/Run states from the Jump clip · set up HorseEnemyAnim, LlamaEnemyAnim, PigEnemyAnim myself
+Claude · DECISIONS.md · Claude wrote the first lines into the file on my PC · added the playtest results myself
+Playtest · ran it myself on a phone with 2 testers (Aidana 8 tries, Temirlan 4 tries), counted tries, changed values myself
