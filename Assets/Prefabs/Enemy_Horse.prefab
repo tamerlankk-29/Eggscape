@@ -631,6 +631,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   hp: 3
   deathEffect: {fileID: 4319938556889411599, guid: 7b3ca49084fa8664b93bf8b9074a018c, type: 3}
+  effectLifeTime: 2
 --- !u!114 &7135886558641817222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -649,7 +650,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   patrolSpeed: 2
-  chaseSpeed: 4.5
+  chaseSpeed: 3.5
   loseTime: 2
   attackRange: 2.6
   windUp: 0.5

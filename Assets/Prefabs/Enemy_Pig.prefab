@@ -243,6 +243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   hp: 3
   deathEffect: {fileID: 4319938556889411599, guid: 7b3ca49084fa8664b93bf8b9074a018c, type: 3}
+  effectLifeTime: 2
 --- !u!120 &8010757259949120876
 LineRenderer:
   serializedVersion: 3
@@ -366,8 +367,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChargerAI
   triggerRange: 7
-  windUp: 0.7
-  lockTime: 0.2
+  windUp: 0.8
+  lockTime: 0.35
   dashSpeed: 12
   dashDistance: 9
   hitRadius: 2

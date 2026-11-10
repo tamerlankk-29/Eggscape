@@ -438,6 +438,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   hp: 3
   deathEffect: {fileID: 4319938556889411599, guid: 7b3ca49084fa8664b93bf8b9074a018c, type: 3}
+  effectLifeTime: 2
 --- !u!120 &2625334788038178883
 LineRenderer:
   serializedVersion: 3
@@ -566,8 +567,8 @@ MonoBehaviour:
   turnSpeed: 240
   loseTime: 3
   aimTime: 0.6
-  shotSpeed: 6
-  cooldown: 1.5
+  shotSpeed: 5
+  cooldown: 2
   laserLength: 12
   projectilePrefab: {fileID: 675596828701355497, guid: 72c2394e2acad7e4dab493a449a92edc, type: 3}
   muzzle: {fileID: 9041075867895489791}
