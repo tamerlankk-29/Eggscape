@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdd37032052a1ce4a96b8fee94a7c6e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Heart
-  lifeTime: 999
+  stats: {fileID: 11400000, guid: 3b5ab736fade5424d951697fe3fc034f, type: 2}
 --- !u!95 &175343713591092425
 Animator:
   serializedVersion: 7

@@ -153,5 +153,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7b861d520d77eb4580e2c32c5618932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BombHazard
-  lifeTime: 6
+  stats: {fileID: 11400000, guid: 6ecbd578fdef50c49a24a39cc9c89b7c, type: 2}
   explosionPrefab: {fileID: 4319938556889411599, guid: 7b3ca49084fa8664b93bf8b9074a018c, type: 3}

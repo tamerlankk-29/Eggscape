@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d3ed0ad368d54d4595feff522c2c750, type: 3}
+  m_Name: Horse_Stats
+  m_EditorClassIdentifier: Assembly-CSharp::PatrollerStats
+  maxHp: 3
+  moveSpeed: 2
+  turnSpeed: 360
+  viewRange: 8
+  fov: 110
+  eyeHeight: 1
+  chaseSpeed: 3.5
+  loseTime: 2
+  attackRange: 2.6
+  windUp: 0.5
+  hitReach: 3.2
+  recoverTime: 0.8
+  damage: 1

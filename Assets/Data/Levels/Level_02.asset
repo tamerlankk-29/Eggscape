@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a66eaf3d81ccb94e87e1780afde0a38, type: 3}
+  m_Name: Level_02
+  m_EditorClassIdentifier: Assembly-CSharp::LevelData
+  number: 2
+  title: Enemy Arena
+  sceneName: Level2
+  nextScene: Level3
+  goal: 0
+  coinsRequired: -1
+  timeLimit: 180
+  fallY: -10
+  hazardPrefabs:
+  - {fileID: 5487677659933492109, guid: 1cae719bb308359499dbeab01e3a565b, type: 3}
+  - {fileID: 223044604400744027, guid: 6fbd80bf19c761a4ab572a8f5ba6098a, type: 3}
+  - {fileID: 8226156406408580834, guid: 35187a849d8ff9b46b0d2331f0f2118d, type: 3}
+  hazardFirstDelay: 1
+  hazardInterval: 1.5
+  hazardRange: 5
+  hazardHeight: 10
+  hazardStopZ: 56
+  enemies:
+  - prefab: {fileID: 2687998473546082527, guid: 76a73bc1acaec6e4080dd4d52aca7dcd, type: 3}
+    position: {x: -8, y: 0.975, z: 61}
+    rotationY: 0
+    route:
+    - {x: -8, y: 0.975, z: 61}
+    - {x: -8, y: 0.975, z: 71}
+    - {x: -2, y: 0.975, z: 71}
+    - {x: -2, y: 0.975, z: 61}
+  - prefab: {fileID: 4581896512702518470, guid: b4f9978be5443d84d82ffb65de79c68d, type: 3}
+    position: {x: 2, y: 0.975, z: 68}
+    rotationY: 180
+    route: []
+  - prefab: {fileID: 1358442953607220122, guid: 8ccefd6395d06f040be7878199f1df6a, type: 3}
+    position: {x: 5, y: 0.975, z: 74}
+    rotationY: 180
+    route: []
+  pointsPerCoin: 100
+  pointsPerHeart: 200
+  pointsPerSecondLeft: 10

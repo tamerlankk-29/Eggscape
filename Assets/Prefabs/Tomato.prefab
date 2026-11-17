@@ -143,4 +143,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb6c2a1ea4a418b4e9c23674a7338e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Rock
-  lifeTime: 5
+  stats: {fileID: 11400000, guid: d89038cc8728649478cb0d679e628171, type: 2}

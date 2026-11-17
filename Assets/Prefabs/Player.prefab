@@ -956,17 +956,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72daac8e4c21ea84dbe78669a868c19e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player3D
-  force: 14
-  maxSpeed: 8
-  jumpForce: 7
-  groundCheckDistance: 0.6
-  brake: 4
+  stats: {fileID: 11400000, guid: 1f87f0e14a32b0c43952abadf58dea7c, type: 2}
   animator: {fileID: 6816348339966222181}
-  nextScene: Level2
   jumpClip: {fileID: 8300000, guid: f000d012ba0f6c74e820181fca31eed6, type: 3}
   coinClip: {fileID: 8300000, guid: 44b0b6c8fc6d81b479ce94c73d53c014, type: 3}
   coins: 0
   coinsTotal: 0
+  coinsNeeded: 0
   aim: {x: 0, y: 0, z: 1}
   grounded: 0
 --- !u!114 &2686596514377314711
@@ -981,8 +977,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a6814ec70575e46bcd6a4c64b577fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shooter
+  stats: {fileID: 11400000, guid: 1f87f0e14a32b0c43952abadf58dea7c, type: 2}
   bulletPrefab: {fileID: 786214351895151471, guid: d66c94b228e708446b318a96b8140798, type: 3}
-  cooldown: 0.3
   shootClip: {fileID: 8300000, guid: 6266490e9f568534e92bf26e0d7a8a81, type: 3}
 --- !u!114 &2370889570345420063
 MonoBehaviour:
@@ -996,10 +992,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40f6b2aa79d40342917b26563442684, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  hp: 3
-  maxHp: 3
+  stats: {fileID: 11400000, guid: 1f87f0e14a32b0c43952abadf58dea7c, type: 2}
   hurtClip: {fileID: 8300000, guid: 666e02a60acc8bc46aeadb577d56af6c, type: 3}
   healClip: {fileID: 8300000, guid: 09ff94629c8cc0b4fa8b658148318257, type: 3}
+  hp: 3
 --- !u!1 &5540834429058663641
 GameObject:
   m_ObjectHideFlags: 0

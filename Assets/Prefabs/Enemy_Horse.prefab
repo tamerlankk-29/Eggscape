@@ -610,10 +610,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53df812206bf70a4ba48420994f7c0ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySight
-  viewRange: 8
-  fov: 110
-  eyeHeight: 1
-  checkInterval: 0.15
+  stats: {fileID: 11400000, guid: 884b9fdd76ebe2b44b13c8326a30b5f4, type: 2}
   obstacleMask:
     serializedVersion: 2
     m_Bits: 64
@@ -629,9 +626,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61f4a0f259b0fe43b9d96ada09553b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  hp: 3
+  stats: {fileID: 11400000, guid: 884b9fdd76ebe2b44b13c8326a30b5f4, type: 2}
   deathEffect: {fileID: 4319938556889411599, guid: 7b3ca49084fa8664b93bf8b9074a018c, type: 3}
-  effectLifeTime: 2
 --- !u!114 &7135886558641817222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -644,19 +640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1314d41d6814a747b9c55cd1d7725d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PatrollerAI
-  waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  patrolSpeed: 2
-  chaseSpeed: 3.5
-  loseTime: 2
-  attackRange: 2.6
-  windUp: 0.5
-  hitReach: 3.2
-  recoverTime: 0.8
-  damage: 1
+  stats: {fileID: 11400000, guid: 884b9fdd76ebe2b44b13c8326a30b5f4, type: 2}
   warning: {fileID: 1627611186716174809}
   windUpClip: {fileID: 8300000, guid: ea7cfcccf956fd846b68ca3f194c5b96, type: 3}
   anim: {fileID: 3261914693186107859}
