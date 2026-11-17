@@ -35,3 +35,11 @@ Claude · bug: death explosions stayed in the scene · got Destroy(fx, 2f) for E
 Claude · animations: Pig.fbx has only Idle and Jump, the guide expected Walk and Run · got the idea to make Walk/Run states from the Jump clip · set up HorseEnemyAnim, LlamaEnemyAnim, PigEnemyAnim myself
 Claude · DECISIONS.md · Claude wrote the first lines into the file on my PC · added the playtest results myself
 Playtest · ran it myself on a phone with 2 testers (Aidana 8 tries, Temirlan 4 tries), counted tries, changed values myself
+
+=== Assignment 11: Data and Saves ===
+Claude (chat) · step-by-step guide · asked how to move balance into ScriptableObjects, build levels from data and save progress to JSON · got the plan, the data classes, SaveSystem and the changed scripts · read the code, created the 16 data assets and filled the numbers myself
+Claude · writing code · Claude wrote the 35 script files directly into the project on my PC · I checked them in Unity, wired prefabs, scenes and LevelLoader myself
+Claude · bug: Spawner crashed with a null object · Claude found that Level_02 had 3 empty Hazard Prefabs slots · filled them myself
+Claude · menu · got steps for the level select, the reset confirm panel and the settings save · built the UI in Unity myself, fixed the unreadable reset panel myself
+Claude · Unity error with GPU Resident Drawer on rocks · got the cause (Unity 6 bug, PC render asset) · turned it off myself
+Tests · live balance, restart test via Unity Remote on iPhone, broken save.json · did and recorded them myself

@@ -14,6 +14,15 @@ public static class SaveSystem
 
     static SaveData data;   // данные в памяти (RAM)
 
+    // В проекте выключена перезагрузка домена при Play (Enter Play Mode Options),
+    // поэтому static-поля живут между запусками Play. Обнуляем их при каждом старте,
+    // иначе игра не перечитывает save.json и берёт старые данные из памяти.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics()
+    {
+        data = null;
+    }
+
     // Текущие данные. При первом обращении читаются из файла
     public static SaveData Data
     {
