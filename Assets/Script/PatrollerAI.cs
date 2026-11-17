@@ -1,37 +1,33 @@
 using UnityEngine;
-using UnityEngine.AI;   // NavMeshAgent
-using TMPro;            // TMP_Text для надписи состояния
+using UnityEngine.AI;
+using TMPro;
 
 // Лошадь-патрульный. Состояния: Patrol -> Chase -> Attack (замах) -> Recover -> Chase ...
-// Проверяет навык игрока: позиционирование (не попадать в конус, прятаться за заборами).
+// Все числа баланса - в PatrollerStats (Horse_Stats). Маршрут - в LevelData.
 [RequireComponent(typeof(NavMeshAgent), typeof(EnemySight))]
 public class PatrollerAI : MonoBehaviour
 {
     enum State { Patrol, Chase, Attack, Recover }
 
-    [Header("Маршрут")]
-    [SerializeField] Transform[] waypoints;        // точки маршрута (пустые объекты в уровне)
-    [SerializeField] float patrolSpeed = 2f;       // м/с
-    [Header("Погоня")]
-    [SerializeField] float chaseSpeed = 4.5f;      // м/с (яйцо катится до 8 м/с - можно уйти)
-    [SerializeField] float loseTime = 2f;          // с без видимости -> назад на маршрут
-    [Header("Атака")]
-    [SerializeField] float attackRange = 2.6f;     // м между центрами: от центра лошади до носа ~1.6 + радиус яйца 0.5
-    [SerializeField] float windUp = 0.5f;          // с, предупреждение перед ударом
-    [SerializeField] float hitReach = 3.2f;        // м, удар попадёт, только если игрок всё ещё ближе
-    [SerializeField] float recoverTime = 0.8f;     // с, окно для ответа игрока после удара
-    [SerializeField] int damage = 1;               // сколько жизней отнимает
-    [Header("Предупреждение и отладка")]
-    [SerializeField] GameObject warning;           // красный "!" над головой, виден во время замаха
-    [SerializeField] AudioClip windUpClip;         // звук замаха
-    [SerializeField] Animator anim;                // необязательно: состояния Idle / Walk / Run
-    [SerializeField] TMP_Text stateLabel;          // необязательно: 3D-текст с именем состояния
+    // Техника, не баланс
+    const float RepathInterval = 0.2f;   // с, пересчёт пути в погоне (5 раз в секунду)
+    const float ArriveDistance = 0.3f;   // м, «дошла до точки маршрута»
+    const float PatrolStopping = 0.2f;   // м, stoppingDistance на маршруте
+    const float ChaseStopGap = 0.4f;     // м, в погоне останавливается чуть раньше attackRange
 
-    State state;          // текущее состояние
-    float timer;          // секунд в текущем состоянии
-    float lostTimer;      // секунд с тех пор, как последний раз видела игрока
-    float repath;         // секунд до следующего пересчёта пути
-    int point;            // номер текущей точки маршрута
+    [SerializeField] PatrollerStats stats;   // НОВОЕ: Horse_Stats
+    [Header("Предупреждение и отладка")]
+    [SerializeField] GameObject warning;     // красный "!" над головой
+    [SerializeField] AudioClip windUpClip;
+    [SerializeField] Animator anim;
+    [SerializeField] TMP_Text stateLabel;
+
+    Vector3[] route = new Vector3[0];        // НОВОЕ: точки маршрута из LevelData
+    State state;
+    float timer;
+    float lostTimer;
+    float repath;
+    int point;
     NavMeshAgent agent;
     EnemySight sight;
     AudioSource src;
@@ -43,9 +39,15 @@ public class PatrollerAI : MonoBehaviour
         src = GetComponent<AudioSource>();
     }
 
+    // НОВОЕ: вызывает LevelLoader сразу после создания лошади (до Start)
+    public void SetRoute(Vector3[] points)
+    {
+        route = points != null ? points : new Vector3[0];
+    }
+
     void Start()
     {
-        SetState(State.Patrol);   // начинаем с маршрута
+        SetState(State.Patrol);
     }
 
     void Update()
@@ -54,50 +56,51 @@ public class PatrollerAI : MonoBehaviour
         switch (state)
         {
             case State.Patrol:
+                agent.speed = stats.moveSpeed;          // читаем каждый кадр: правка ассета видна сразу
                 Patrol();
                 if (sight.Sees) SetState(State.Chase);
                 break;
 
             case State.Chase:
+                agent.speed = stats.chaseSpeed;
                 lostTimer = sight.Sees ? 0f : lostTimer + Time.deltaTime;
                 repath -= Time.deltaTime;
-                if (repath <= 0f)                                  // новый путь 5 раз в секунду, не каждый кадр
+                if (repath <= 0f)
                 {
-                    repath = 0.2f;
+                    repath = RepathInterval;
                     agent.SetDestination(sight.Player.position);
                 }
-                if (sight.DistanceToPlayer() < attackRange) SetState(State.Attack);
-                else if (lostTimer > loseTime) SetState(State.Patrol);
+                if (sight.DistanceToPlayer() < stats.attackRange) SetState(State.Attack);
+                else if (lostTimer > stats.loseTime) SetState(State.Patrol);
                 break;
 
-            case State.Attack:                                     // стоит и замахивается - это и есть предупреждение
-                sight.FacePlayer(360f);
-                if (timer >= windUp)
+            case State.Attack:                             // стоит и замахивается
+                sight.FacePlayer(stats.turnSpeed);
+                if (timer >= stats.windUp)
                 {
-                    if (sight.DistanceToPlayer() < hitReach)       // успел откатиться - не попала
-                        sight.PlayerHealth.TakeDamage(damage);
+                    if (sight.DistanceToPlayer() < stats.hitReach)
+                        sight.PlayerHealth.TakeDamage(stats.damage);
                     SetState(State.Recover);
                 }
                 break;
 
-            case State.Recover:                                    // окно игрока: лошадь стоит
-                if (timer >= recoverTime) SetState(State.Chase);
+            case State.Recover:                            // окно игрока
+                if (timer >= stats.recoverTime) SetState(State.Chase);
                 break;
         }
     }
 
-    // Идём к текущей точке; дошли - берём следующую (по кругу)
     void Patrol()
     {
-        if (waypoints.Length == 0) return;
-        if (!agent.pathPending && agent.remainingDistance < 0.3f)
+        if (route.Length == 0) return;
+        if (!agent.pathPending && agent.remainingDistance < ArriveDistance)
         {
-            point = (point + 1) % waypoints.Length;
-            agent.SetDestination(waypoints[point].position);
+            point = (point + 1) % route.Length;
+            agent.SetDestination(route[point]);
         }
     }
 
-    // Единственное место, где меняется состояние. Здесь вся логика "входа"
+    // Единственное место, где меняется состояние
     void SetState(State next)
     {
         state = next;
@@ -106,13 +109,12 @@ public class PatrollerAI : MonoBehaviour
         repath = 0f;
 
         bool standing = next == State.Attack || next == State.Recover;
-        agent.isStopped = standing;                                  // во время замаха и отдыха стоит
-        agent.speed = next == State.Patrol ? patrolSpeed : chaseSpeed;
-        agent.stoppingDistance = next == State.Patrol ? 0.2f : attackRange - 0.4f; // в погоне останавливается до яйца, а не толкает его
-        if (next == State.Patrol && waypoints.Length > 0)
-            agent.SetDestination(waypoints[point].position);
+        agent.isStopped = standing;
+        agent.stoppingDistance = next == State.Patrol ? PatrolStopping : stats.attackRange - ChaseStopGap;
+        if (next == State.Patrol && route.Length > 0)
+            agent.SetDestination(route[point]);
 
-        if (warning != null) warning.SetActive(next == State.Attack); // "!" только во время замаха
+        if (warning != null) warning.SetActive(next == State.Attack);
         if (next == State.Attack && windUpClip != null) src.PlayOneShot(windUpClip);
         if (anim != null)
             anim.CrossFade(next == State.Patrol ? "Walk" : next == State.Chase ? "Run" : "Idle", 0.15f);

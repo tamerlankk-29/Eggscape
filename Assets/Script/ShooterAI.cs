@@ -2,39 +2,31 @@ using UnityEngine;
 using UnityEngine.AI;
 using TMPro;
 
-// Лама-стрелок. Держит дистанцию, целится красным лазером, плюётся, перезаряжается.
-// Состояния: Idle -> KeepDistance -> Aim -> Cooldown -> KeepDistance ...
-// Проверяет навык игрока: реакцию (увидел лазер - сдвинься в сторону).
+// Лама-стрелок. Состояния: Idle -> KeepDistance -> Aim -> Cooldown -> KeepDistance ...
+// Все числа баланса - в ShooterStats (Llama_Stats). Урон плевка - в Spit_Stats.
 [RequireComponent(typeof(NavMeshAgent), typeof(EnemySight))]
 public class ShooterAI : MonoBehaviour
 {
     enum State { Idle, KeepDistance, Aim, Cooldown }
 
-    [Header("Дистанция")]
-    [SerializeField] float preferredMin = 4f;     // м, ближе - отходит
-    [SerializeField] float preferredMax = 8f;     // м, дальше - подходит
-    [SerializeField] float moveSpeed = 2.5f;      // м/с
-    [SerializeField] float turnSpeed = 240f;      // градусов в секунду
-    [SerializeField] float loseTime = 3f;         // с без видимости -> Idle
-    [Header("Выстрел")]
-    [SerializeField] float aimTime = 0.6f;        // с, лазер перед выстрелом (предупреждение)
-    [SerializeField] float shotSpeed = 6f;        // м/с, медленный - можно увернуться
-    [SerializeField] float cooldown = 1.5f;       // с между выстрелами
-    [SerializeField] float laserLength = 12f;     // м, длина лазера
-    [SerializeField] GameObject projectilePrefab; // префаб Spit (EnemyProjectile)
-    [SerializeField] Transform muzzle;            // точка у рта, откуда летит снаряд
-    [SerializeField] LineRenderer laser;          // красная линия прицела
+    const float RepathInterval = 0.3f;    // техника: как часто выбираем, куда идти
+
+    [SerializeField] ShooterStats stats;           // НОВОЕ: Llama_Stats
+    [Header("Ссылки")]
+    [SerializeField] GameObject projectilePrefab;  // префаб Spit
+    [SerializeField] Transform muzzle;             // точка у рта
+    [SerializeField] LineRenderer laser;           // красная линия прицела
     [Header("Звук и отладка")]
-    [SerializeField] AudioClip aimClip;           // звук начала прицела
-    [SerializeField] AudioClip shootClip;         // звук плевка
+    [SerializeField] AudioClip aimClip;
+    [SerializeField] AudioClip shootClip;
     [SerializeField] Animator anim;
     [SerializeField] TMP_Text stateLabel;
 
     State state;
-    float timer;          // секунд в текущем состоянии
-    float lostTimer;      // секунд без видимости игрока
-    float repath;         // секунд до следующего выбора точки
-    Vector3 aimDir;       // куда полетит снаряд
+    float timer;
+    float lostTimer;
+    float repath;
+    Vector3 aimDir;
     NavMeshAgent agent;
     EnemySight sight;
     AudioSource src;
@@ -44,12 +36,11 @@ public class ShooterAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         sight = GetComponent<EnemySight>();
         src = GetComponent<AudioSource>();
-        agent.updateRotation = false;   // поворачиваем сами: лама всегда смотрит на игрока, даже когда пятится
+        agent.updateRotation = false;   // поворачиваем сами: лама смотрит на игрока, даже когда пятится
     }
 
     void Start()
     {
-        agent.speed = moveSpeed;
         SetState(State.Idle);
     }
 
@@ -64,19 +55,19 @@ public class ShooterAI : MonoBehaviour
 
             case State.KeepDistance:
                 lostTimer = sight.Sees ? 0f : lostTimer + Time.deltaTime;
-                sight.FacePlayer(turnSpeed);
+                sight.FacePlayer(stats.turnSpeed);
                 KeepDistance();
-                bool inRange = sight.DistanceToPlayer() <= preferredMax + 1f;
-                if (sight.Sees && inRange && sight.IsOnScreen()) SetState(State.Aim); // не из-за кадра
-                else if (lostTimer > loseTime) SetState(State.Idle);
+                bool inRange = sight.DistanceToPlayer() <= stats.aimRange;
+                if (sight.Sees && inRange && sight.IsOnScreen()) SetState(State.Aim);
+                else if (lostTimer > stats.loseTime) SetState(State.Idle);
                 break;
 
             case State.Aim:                                   // стоит и целится - это предупреждение
-                sight.FacePlayer(turnSpeed);
+                sight.FacePlayer(stats.turnSpeed);
                 aimDir = (sight.Player.position - muzzle.position).normalized;
                 laser.SetPosition(0, muzzle.position);
-                laser.SetPosition(1, muzzle.position + aimDir * laserLength);
-                if (timer >= aimTime)
+                laser.SetPosition(1, muzzle.position + aimDir * stats.laserLength);
+                if (timer >= stats.aimTime)
                 {
                     Fire();
                     SetState(State.Cooldown);
@@ -84,31 +75,31 @@ public class ShooterAI : MonoBehaviour
                 break;
 
             case State.Cooldown:                              // перезарядка - окно игрока
-                sight.FacePlayer(turnSpeed);
-                if (timer >= cooldown) SetState(State.KeepDistance);
+                sight.FacePlayer(stats.turnSpeed);
+                if (timer >= stats.cooldown) SetState(State.KeepDistance);
                 break;
         }
     }
 
-    // Раз в 0.3 с выбираем, куда идти: отойти, подойти или стоять
     void KeepDistance()
     {
+        agent.speed = stats.moveSpeed;
         repath -= Time.deltaTime;
         if (repath > 0f) return;
-        repath = 0.3f;
+        repath = RepathInterval;
         float d = sight.DistanceToPlayer();
-        if (d < preferredMin)
-            agent.SetDestination(transform.position - sight.DirectionToPlayer() * 3f); // назад на 3 м
-        else if (d > preferredMax)
-            agent.SetDestination(sight.Player.position);                              // к игроку
+        if (d < stats.preferredMin)
+            agent.SetDestination(transform.position - sight.DirectionToPlayer() * stats.backStep);
+        else if (d > stats.preferredMax)
+            agent.SetDestination(sight.Player.position);
         else
-            agent.ResetPath();                                                        // стоять
+            agent.ResetPath();
     }
 
     void Fire()
     {
         GameObject p = Instantiate(projectilePrefab, muzzle.position, Quaternion.LookRotation(aimDir));
-        p.GetComponent<Rigidbody>().linearVelocity = aimDir * shotSpeed;   // как помидоры у Boss
+        p.GetComponent<Rigidbody>().linearVelocity = aimDir * stats.shotSpeed;
         if (shootClip != null) src.PlayOneShot(shootClip);
     }
 
@@ -119,8 +110,8 @@ public class ShooterAI : MonoBehaviour
         lostTimer = 0f;
         repath = 0f;
 
-        if (next != State.KeepDistance) agent.ResetPath();  // целится и перезаряжается стоя
-        laser.enabled = next == State.Aim;                  // лазер только во время прицела
+        if (next != State.KeepDistance) agent.ResetPath();
+        laser.enabled = next == State.Aim;
         if (next == State.Aim && aimClip != null) src.PlayOneShot(aimClip);
         if (anim != null) anim.CrossFade(next == State.KeepDistance ? "Walk" : "Idle", 0.15f);
         if (stateLabel != null) stateLabel.text = next.ToString();

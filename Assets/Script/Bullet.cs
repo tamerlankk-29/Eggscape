@@ -1,13 +1,13 @@
 using UnityEngine;
 
+// Пуля яйца. Скорость и время жизни передаёт Shooter из PlayerStats.
 public class Bullet : MonoBehaviour
 {
-    public float speed = 12f;
-
-    void Start()
+    // НОВОЕ: вместо Start с числами 12 и 3
+    public void Launch(float speed, float lifeTime)
     {
         GetComponent<Rigidbody>().linearVelocity = transform.forward * speed;
-        Destroy(gameObject, 3f);
+        Destroy(gameObject, lifeTime);
     }
 
     void OnTriggerEnter(Collider other)
@@ -20,7 +20,6 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        // НОВОЕ: попали во врага (лошадь, лама, свинья) - минус жизнь врагу
         EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
         if (enemy != null)
         {

@@ -1,20 +1,29 @@
 using UnityEngine;
 
-// Жизни врага. Пуля игрока (Bullet) вызывает TakeHit.
+// Жизни врага. Максимум - в ассете, текущие - на самом враге.
+// Пуля игрока (Bullet) вызывает TakeHit.
 public class EnemyHealth : MonoBehaviour
 {
-    [SerializeField] int hp = 3;               // сколько попаданий выдерживает
+    const float EffectLifeTime = 2f;           // только картинка: сколько живёт взрыв
+
+    [SerializeField] EnemyStats stats;         // НОВОЕ: тот же ассет, что у AI этого врага
     [SerializeField] GameObject deathEffect;   // необязательно: префаб Explosion
-    [SerializeField] float effectLifeTime = 2f; // секунд, потом взрыв удаляется из сцены
+
+    int hp;                                    // текущие жизни ИМЕННО ЭТОГО врага
+
+    void Start()
+    {
+        hp = stats.maxHp;                      // НОВОЕ: было поле hp = 3
+    }
 
     public void TakeHit()
     {
-        hp--;
+        hp--;                                  // никогда не stats.maxHp-- : это ранило бы всех таких врагов
         if (hp > 0) return;
         if (deathEffect != null)
         {
             GameObject fx = Instantiate(deathEffect, transform.position, Quaternion.identity);
-            Destroy(fx, effectLifeTime);       // иначе взрыв остаётся в сцене навсегда
+            Destroy(fx, EffectLifeTime);
         }
         Destroy(gameObject);
     }

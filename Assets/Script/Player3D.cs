@@ -1,153 +1,138 @@
-using UnityEngine;                    // основные классы Unity: MonoBehaviour, Vector3, Rigidbody, Physics
-using UnityEngine.InputSystem;        // новая система ввода: тип InputValue
-using UnityEngine.SceneManagement;    // SceneManager: загрузка сцен (рестарт, следующий уровень)
+using UnityEngine;                    // MonoBehaviour, Vector3, Rigidbody, Physics
+using UnityEngine.InputSystem;        // InputValue
 
-// Управление яйцом: движение, прыжок, монеты, финиш, урон от врагов, движущаяся платформа.
-// Висит на объекте Player (вместе с Rigidbody, SphereCollider, AudioSource, PlayerInput, Shooter, Health).
+// Управление яйцом: движение, прыжок, монеты, финиш, урон от касания врага, движущаяся платформа.
+// Все числа баланса - в ассете PlayerStats (Assets/Data/Player_Stats).
 public class Player3D : MonoBehaviour
 {
-    // ---------- Настройки (видны в Inspector) ----------
-    public float force = 14f;                 // сила разгона
-    public float maxSpeed = 8f;               // максимальная горизонтальная скорость
-    public float jumpForce = 7f;              // сила прыжка (при массе 1 подлёт примерно на 2.5)
-    public float groundCheckDistance = 0.6f;  // длина луча вниз: радиус шара 0.5 + запас 0.1
-    public float brake = 4f;                  // сила торможения, когда кнопки отпущены
-    public Animator animator;                 // Animator на EggHolder (параметры Speed, Grounded, Jump)
-    public string nextScene = "Level2";       // какая сцена загрузится на финише (своя на каждом уровне)
-    public AudioClip jumpClip, coinClip;      // звуки прыжка и монеты
+    // Геометрия и ощущение, не баланс:
+    const float GroundCheckDistance = 0.6f;   // луч вниз: радиус шара 0.5 + запас 0.1
+    const float SpinDamping = 0.9f;           // как быстро гаснет вращение при торможении
 
-    // ---------- Состояние (public, чтобы читали Hud, Shooter, EggVisual) ----------
+    public PlayerStats stats;                 // НОВОЕ: перетащи Assets/Data/Player_Stats
+    public Animator animator;                 // Animator на EggHolder (Speed, Grounded, Jump)
+    public AudioClip jumpClip, coinClip;
+
+    // Состояние (читают Hud, Shooter, EggVisual, LevelLoader)
     public int coins;                         // сколько монет собрано
     public int coinsTotal;                    // сколько монет на уровне всего
-    public Vector3 aim = Vector3.forward;     // куда смотрит яйцо и куда стреляет
-    public bool grounded;                     // стоим ли на земле (обновляется каждый кадр)
+    public int coinsNeeded;                   // НОВОЕ: сколько нужно для финиша (из LevelData)
+    public Vector3 aim = Vector3.forward;     // куда смотрит и стреляет
+    public bool grounded;
 
-    // ---------- Внутренние ссылки (private) ----------
-    Rigidbody rb;                             // физика яйца
-    AudioSource src;                          // источник звука
-    Transform cam;                            // камера: движение считается относительно неё
-    Vector2 move;                             // последний ввод: x = влево/вправо, y = вперёд/назад
+    Rigidbody rb;
+    AudioSource src;
+    Transform cam;
+    Vector2 move;
 
-    // Один раз при создании объекта: получаем ссылки на компоненты
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();       // Rigidbody на этом же объекте
-        src = GetComponent<AudioSource>();    // AudioSource на этом же объекте
-        cam = Camera.main.transform;          // камера с тегом MainCamera
+        rb = GetComponent<Rigidbody>();
+        src = GetComponent<AudioSource>();
+        cam = Camera.main.transform;
     }
 
-    // Перед первым кадром: считаем все монеты на уровне по тегу Coin
     void Start()
     {
         coinsTotal = GameObject.FindGameObjectsWithTag("Coin").Length;
+        // НОВОЕ: цель уровня берём из LevelData через LevelLoader
+        coinsNeeded = LevelLoader.Current != null ? LevelLoader.Current.CoinsNeeded(coinsTotal) : coinsTotal;
     }
 
-    // Вызывает PlayerInput (Send Messages) при изменении действия Move (стик, WASD)
     public void OnMove(InputValue value)
     {
-        move = value.Get<Vector2>();          // только запоминаем, двигаем в FixedUpdate
+        move = value.Get<Vector2>();
     }
 
-    // Вызывает PlayerInput на действие Jump (и при нажатии, и при отпускании)
     public void OnJump(InputValue value)
     {
-        if (value.isPressed && IsGrounded())  // только нажатие (не отпускание) и только с земли
+        if (value.isPressed && IsGrounded())
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); // мгновенный толчок вверх
-            animator.SetTrigger("Jump");      // включаем анимацию прыжка (Any State -> Egg_Jump)
-            src.PlayOneShot(jumpClip);        // звук прыжка
+            rb.AddForce(Vector3.up * stats.jumpForce, ForceMode.Impulse);   // НОВОЕ: stats
+            animator.SetTrigger("Jump");
+            src.PlayOneShot(jumpClip);
         }
     }
 
-    // Проверка земли: луч из центра яйца вниз
     bool IsGrounded()
     {
-        // ~0 = все слои; триггеры (монеты, шипы) не считаются землёй.
-        // Луч начинается внутри своего коллайдера, поэтому сам себя не задевает.
         return Physics.Raycast(transform.position, Vector3.down,
-            groundCheckDistance, ~0, QueryTriggerInteraction.Ignore);
+            GroundCheckDistance, ~0, QueryTriggerInteraction.Ignore);
     }
 
-    // Каждый кадр: падение в пропасть, проверка земли, данные для Animator
+    // НОВОЕ: проверка падения ушла в LevelLoader (высота теперь в LevelData.fallY)
     void Update()
     {
-        if (transform.position.y < -10f)      // упали в пропасть
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name); // рестарт уровня
-
-        grounded = IsGrounded();              // сохраняем, чтобы читал EggVisual
-
-        Vector3 flat = rb.linearVelocity;     // скорость шара
-        flat.y = 0f;                          // берём только горизонтальную часть
-        animator.SetFloat("Speed", flat.magnitude); // Idle <-> Run по порогу 0.3
-        animator.SetBool("Grounded", grounded);     // Jump -> Idle при приземлении
+        grounded = IsGrounded();
+        Vector3 flat = rb.linearVelocity;
+        flat.y = 0f;
+        animator.SetFloat("Speed", flat.magnitude);
+        animator.SetBool("Grounded", grounded);
     }
 
-    // Каждый шаг физики (50 раз в секунду): силы к Rigidbody добавляются здесь
     void FixedUpdate()
     {
-        // Направления камеры по земле: убираем наклон по Y и делаем длину 1
         Vector3 f = cam.forward; f.y = 0f; f.Normalize();
         Vector3 r = cam.right;   r.y = 0f; r.Normalize();
-        Vector3 dir = f * move.y + r * move.x;      // "вверх на стике" = "от камеры"
-        if (dir.sqrMagnitude > 1f) dir.Normalize(); // по диагонали не быстрее
+        Vector3 dir = f * move.y + r * move.x;
+        if (dir.sqrMagnitude > 1f) dir.Normalize();
 
-        rb.AddForce(dir * force);             // толкаем шар, он катится за счёт трения
+        rb.AddForce(dir * stats.force);                                  // НОВОЕ: stats
 
-        if (dir.sqrMagnitude > 0.01f)         // игрок что-то нажимает
+        if (dir.sqrMagnitude > 0.01f)
         {
-            aim = dir.normalized;             // запоминаем направление взгляда и выстрела
+            aim = dir.normalized;
         }
-        else if (grounded)                    // кнопки отпущены и мы на земле: тормозим
+        else if (grounded)
         {
             Vector3 vel = rb.linearVelocity;
-            rb.AddForce(new Vector3(-vel.x, 0f, -vel.z) * brake, ForceMode.Acceleration); // сила против движения
-            rb.angularVelocity *= 0.9f;       // гасим вращение шара
+            rb.AddForce(new Vector3(-vel.x, 0f, -vel.z) * stats.brake, ForceMode.Acceleration); // НОВОЕ: stats
+            rb.angularVelocity *= SpinDamping;
         }
 
-        // Ограничение горизонтальной скорости (вертикальную не трогаем, чтобы падать и прыгать)
         Vector3 v = rb.linearVelocity;
-        Vector3 flat = new Vector3(v.x, 0f, v.z);
-        if (flat.magnitude > maxSpeed)
+        Vector3 horizontal = new Vector3(v.x, 0f, v.z);
+        if (horizontal.magnitude > stats.maxSpeed)                      // НОВОЕ: stats
         {
-            flat = flat.normalized * maxSpeed;
-            rb.linearVelocity = new Vector3(flat.x, v.y, flat.z);
+            horizontal = horizontal.normalized * stats.maxSpeed;
+            rb.linearVelocity = new Vector3(horizontal.x, v.y, horizontal.z);
         }
     }
 
-    // Вошли в триггер (Is Trigger): монета или финиш
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Coin"))         // монета
+        if (other.CompareTag("Coin"))
         {
-            Destroy(other.gameObject);        // убираем монету
-            coins++;                          // +1 к счётчику
-            src.PlayOneShot(coinClip);        // звук монеты
+            Destroy(other.gameObject);
+            coins++;
+            src.PlayOneShot(coinClip);
         }
 
-        if (other.CompareTag("Exit"))         // флаг финиша
+        if (other.CompareTag("Exit"))
         {
-            if (coins >= coinsTotal)          // собраны все монеты
-                SceneManager.LoadScene(nextScene);   // следующий уровень
+            if (LevelLoader.Current != null && LevelLoader.Current.Level.goal != LevelGoal.CollectCoins)
+                Debug.Log("This level is won by beating the boss, not by the flag");  // НОВОЕ: цель из LevelData
+            else if (coins < coinsNeeded)
+                Debug.Log("Collect coins first! " + coins + " / " + coinsNeeded);
+            else if (LevelLoader.Current != null)
+                LevelLoader.Current.Complete();          // НОВОЕ: очки, сохранение, следующая сцена
             else
-                Debug.Log("Collect all coins first! " + coins + " / " + coinsTotal);
+                Debug.LogWarning("No LevelLoader in this scene");
         }
     }
 
-    // Физическое столкновение: враг отнимает жизнь
     void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("Enemy"))   // лошадь или корова
-            GetComponent<Health>().TakeDamage(1);   // связь со скриптом Health через GetComponent
+        if (other.gameObject.CompareTag("Enemy"))
+            GetComponent<Health>().TakeDamage(stats.contactDamage);   // НОВОЕ: stats
     }
 
-    // Пока касаемся платформы: яйцо едет вместе с движущейся платформой
     void OnCollisionStay(Collision c)
     {
         if (c.gameObject.CompareTag("Platform"))
         {
-            // скрипт может висеть на родителе (касаемся дочернего блока Ground)
             MovingPlatform mp = c.gameObject.GetComponentInParent<MovingPlatform>();
-            if (mp != null) rb.position += mp.delta; // сдвигаемся на столько же, на сколько сдвинулась платформа
+            if (mp != null) rb.position += mp.delta;
         }
     }
 }
