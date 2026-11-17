@@ -417,10 +417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53df812206bf70a4ba48420994f7c0ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySight
-  viewRange: 10
-  fov: 110
-  eyeHeight: 1
-  checkInterval: 0.15
+  stats: {fileID: 11400000, guid: 61a03696b8bf2f1479af2022057af145, type: 2}
   obstacleMask:
     serializedVersion: 2
     m_Bits: 64
@@ -436,9 +433,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61f4a0f259b0fe43b9d96ada09553b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  hp: 3
+  stats: {fileID: 11400000, guid: 61a03696b8bf2f1479af2022057af145, type: 2}
   deathEffect: {fileID: 4319938556889411599, guid: 7b3ca49084fa8664b93bf8b9074a018c, type: 3}
-  effectLifeTime: 2
 --- !u!120 &2625334788038178883
 LineRenderer:
   serializedVersion: 3
@@ -561,15 +557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e044e2c2708c2046a2efb4a3e095313, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShooterAI
-  preferredMin: 4
-  preferredMax: 8
-  moveSpeed: 2.5
-  turnSpeed: 240
-  loseTime: 3
-  aimTime: 0.6
-  shotSpeed: 5
-  cooldown: 2
-  laserLength: 12
+  stats: {fileID: 11400000, guid: 61a03696b8bf2f1479af2022057af145, type: 2}
   projectilePrefab: {fileID: 675596828701355497, guid: 72c2394e2acad7e4dab493a449a92edc, type: 3}
   muzzle: {fileID: 9041075867895489791}
   laser: {fileID: 2625334788038178883}

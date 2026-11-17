@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class MenuButtons : MonoBehaviour
 {
+    public GameObject settingsPanel;
+
+    // Старая кнопка "играть с начала". Start в меню теперь открывает выбор уровня
     public void Play()
     {
         SceneManager.LoadScene("Level1");
@@ -20,23 +22,16 @@ public class MenuButtons : MonoBehaviour
         Debug.Log("Quitting the game");
     }
 
-    public GameObject settingsPanel;
-
     public void Settings()
     {
         settingsPanel.SetActive(true);
     }
 
+    // НОВОЕ: момент сохранения 2 - настройки закрыты, пишем файл один раз
     public void Back()
     {
         settingsPanel.SetActive(false);
-    }
-
-    public AudioSource bgSound;
-
-    public void SetVolume(float value)
-    {
-        bgSound.volume = value;
+        SaveSystem.Save();
     }
 
     public void OpenPanel(GameObject panel)

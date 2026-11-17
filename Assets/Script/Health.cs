@@ -1,70 +1,71 @@
-using System.Collections;             // IEnumerator для корутин
+using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;    // SceneManager для рестарта уровня
+using UnityEngine.SceneManagement;
 
 // Жизни героя: урон, лечение, неуязвимость с миганием, рестарт при смерти.
-// Висит на объекте Player.
 public class Health : MonoBehaviour
 {
-    public int hp = 3;                // текущие жизни
-    public int maxHp = 3;             // максимум жизней
-    public AudioClip hurtClip;        // звук урона
-    public AudioClip healClip;        // звук лечения
+    const float BlinkStep = 0.2f;     // только картинка: яйцо мигает каждые 0.2 с
 
-    bool invincible;                  // неуязвим ли сейчас (после удара)
-    Renderer[] rends;                 // все видимые части яйца: скорлупа, глаза, ручки, ножки
-    AudioSource src;                  // источник звука
+    public PlayerStats stats;         // НОВОЕ: тот же Player_Stats
+    public AudioClip hurtClip;
+    public AudioClip healClip;
+    [HideInInspector] public int hp;  // текущие жизни: живут на яйце, а не в ассете
+
+    bool invincible;
+    Renderer[] rends;
+    AudioSource src;
+
+    void Awake()
+    {
+        hp = stats.maxHp;             // НОВОЕ: полные жизни из ассета
+    }
 
     void Start()
     {
-        rends = GetComponentsInChildren<Renderer>(); // все Renderer на себе и на всех детях
+        rends = GetComponentsInChildren<Renderer>();
         src = GetComponent<AudioSource>();
     }
 
-    // Получить урон. Вызывают: Player3D (враги), Hazard (камни, бомбы, помидоры), DamageZone (шипы)
     public void TakeDamage(int dmg)
     {
-        if (invincible) return;       // во время неуязвимости урон игнорируется
-        hp -= dmg;                    // отнимаем жизни
-        src.PlayOneShot(hurtClip);    // звук урона
-
-        if (hp <= 0)                  // <=, потому что бомба отнимает 2
+        if (invincible) return;
+        hp -= dmg;
+        src.PlayOneShot(hurtClip);
+        if (hp <= 0)
         {
-            GameOver();               // жизни кончились: рестарт уровня
+            GameOver();
             return;
         }
-        StartCoroutine(Invincibility()); // иначе 2 секунды неуязвимости с миганием
+        StartCoroutine(Invincibility());
     }
 
-    // Лечение. Вызывает сердечко (Heart)
     public void Heal(int amount)
     {
-        hp = Mathf.Min(hp + amount, maxHp); // не больше максимума
+        hp = Mathf.Min(hp + amount, stats.maxHp);   // НОВОЕ: максимум из ассета
         src.PlayOneShot(healClip);
     }
 
-    // Показать или скрыть все части яйца
     void SetVisible(bool v)
     {
         foreach (Renderer r in rends) r.enabled = v;
     }
 
-    // Корутина неуязвимости: 10 переключений по 0.2 секунды = 2 секунды мигания
+    // НОВОЕ: длительность из stats.invincibleTime, а не "10 раз по 0.2"
     IEnumerator Invincibility()
     {
         invincible = true;
         bool visible = true;
-        for (int i = 0; i < 10; i++)
+        for (float t = 0f; t < stats.invincibleTime; t += BlinkStep)
         {
-            visible = !visible;                    // переключаем видимость
-            SetVisible(visible);                   // яйцо мигает
-            yield return new WaitForSeconds(0.2f); // ждём 0.2 секунды, игра при этом продолжается
+            visible = !visible;
+            SetVisible(visible);
+            yield return new WaitForSeconds(BlinkStep);
         }
-        SetVisible(true);             // в конце точно видимы
-        invincible = false;           // снова можно получить урон
+        SetVisible(true);
+        invincible = false;
     }
 
-    // Смерть: перезагружаем текущую сцену
     void GameOver()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);

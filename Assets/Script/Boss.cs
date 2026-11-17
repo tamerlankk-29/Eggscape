@@ -1,90 +1,93 @@
-using System.Collections;             // IEnumerator для корутин
+using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;    // загрузка сцены Win
-using UnityEngine.UI;                 // Slider (полоса HP)
+using UnityEngine.UI;
 
-// Босс-корова: смотрит на игрока, атакует веерами помидоров с предупреждением,
-// во второй фазе атакует чаще и шире, получает урон от пуль, при смерти загружает Win.
-// Висит на объекте Boss в Level3.
+// Босс-корова: смотрит на игрока, дрожит (предупреждение), стреляет веером помидоров.
+// Во второй фазе чаще и шире. Все числа - в BossStats (Cow_Stats).
 public class Boss : MonoBehaviour
 {
-    public int maxHp = 8;                 // жизни босса (в Inspector сцены стоит своё значение)
-    public Transform player;              // яйцо
-    public GameObject projectilePrefab;   // префаб помидора (со скриптом Rock -> наносит урон)
-    public Slider hpBar;                  // полоса HP на экране
-    public float projectileSpeed = 8f;    // скорость помидоров
-    public string winScene = "Win";       // сцена победы
+    // Картинка и геометрия, не баланс
+    const float ShakeAmount = 0.15f;   // ±15% размера при дрожи
+    const float ShakeSpeed = 20f;
+    const float SpawnForward = 2f;     // м, помидор появляется перед коровой, а не внутри
+    const float SpawnUp = 1f;
 
-    int hp;                               // текущие жизни
+    public BossStats stats;               // НОВОЕ: Cow_Stats
+    public Transform player;
+    public GameObject projectilePrefab;   // Tomato
+    public Slider hpBar;
+
+    int hp;
+    bool dead;
 
     void Start()
     {
-        hp = maxHp;                       // полные жизни
-        hpBar.maxValue = maxHp;           // настраиваем полосу HP
+        hp = stats.maxHp;
+        hpBar.maxValue = stats.maxHp;
         hpBar.value = hp;
-        StartCoroutine(AttackLoop());     // запускаем цикл атак
+        StartCoroutine(AttackLoop());
     }
 
-    // Каждый кадр поворачиваемся к игроку (только по горизонтали)
     void Update()
     {
-        Vector3 look = player.position - transform.position; // направление от босса к игроку
-        look.y = 0f;                                          // без наклона
-        if (look.sqrMagnitude > 0.01f)                        // защита от нулевого вектора
+        Vector3 look = player.position - transform.position;
+        look.y = 0f;
+        if (look.sqrMagnitude > 0.01f)
             transform.rotation = Quaternion.LookRotation(look);
     }
 
-    // Попадание пули. Вызывает Bullet.OnTriggerEnter
     public void TakeHit()
     {
-        hp--;                             // -1 HP
-        hpBar.value = hp;                 // обновляем полосу
+        if (dead) return;
+        hp--;
+        hpBar.value = hp;
         if (hp <= 0)
-            SceneManager.LoadScene(winScene); // босс побеждён -> экран победы
+        {
+            dead = true;
+            StopAllCoroutines();
+            if (LevelLoader.Current != null) LevelLoader.Current.Complete();   // НОВОЕ: очки + сохранение + Win
+            else Debug.LogWarning("No LevelLoader in Level3");
+        }
     }
 
-    // Корутина атак: предупреждение -> веер помидоров -> пауза, и так по кругу
     IEnumerator AttackLoop()
     {
-        yield return new WaitForSeconds(2f);  // 2 секунды в начале боя
-        while (true)                          // бесконечно; игра не зависает, потому что внутри есть yield
+        yield return new WaitForSeconds(stats.startDelay);
+        while (true)
         {
-            bool phase2 = hp <= maxHp / 2;    // вторая фаза: половина HP или меньше (деление целых)
+            bool phase2 = hp <= stats.maxHp * stats.phase2At;     // НОВОЕ: было maxHp / 2
 
-            yield return Telegraph(0.8f);     // предупреждение: босс дрожит 0.8 секунды
+            yield return Telegraph(stats.telegraphTime);
 
-            int count = phase2 ? 5 : 3;           // сколько помидоров
-            float spread = phase2 ? 50f : 30f;    // ширина веера в градусах в каждую сторону
-            Vector3 toPlayer = player.position - transform.position; // центр веера: на игрока
+            int count = phase2 ? stats.phase2Count : stats.phase1Count;
+            float spread = phase2 ? stats.phase2Spread : stats.phase1Spread;
+            Vector3 toPlayer = player.position - transform.position;
             toPlayer.y = 0f;
             toPlayer.Normalize();
 
             for (int i = 0; i < count; i++)
             {
-                // угол равномерно от -spread до +spread (например -30, 0, +30); (float) нужен для дробного деления
-                float angle = Mathf.Lerp(-spread, spread, i / (float)(count - 1));
-                Vector3 dir = Quaternion.Euler(0f, angle, 0f) * toPlayer;      // поворачиваем направление на этот угол вокруг Y
-                Vector3 pos = transform.position + dir * 2f + Vector3.up * 1f; // точка появления перед коровой, чтобы не застрять в ней
-                GameObject p = Instantiate(projectilePrefab, pos, Quaternion.identity); // создаём помидор из префаба
-                p.GetComponent<Rigidbody>().linearVelocity = dir * projectileSpeed;    // запускаем его
+                float angle = count > 1 ? Mathf.Lerp(-spread, spread, i / (float)(count - 1)) : 0f;
+                Vector3 dir = Quaternion.Euler(0f, angle, 0f) * toPlayer;
+                Vector3 pos = transform.position + dir * SpawnForward + Vector3.up * SpawnUp;
+                GameObject p = Instantiate(projectilePrefab, pos, Quaternion.identity);
+                p.GetComponent<Rigidbody>().linearVelocity = dir * stats.projectileSpeed;
             }
 
-            // Окно, чтобы подкатиться и выстрелить (во второй фазе короче)
-            yield return new WaitForSeconds(phase2 ? 1.5f : 3f);
+            yield return new WaitForSeconds(phase2 ? stats.phase2Pause : stats.phase1Pause);
         }
     }
 
-    // Предупреждение перед атакой: размер босса пульсирует на ±15%
     IEnumerator Telegraph(float time)
     {
-        Vector3 s = transform.localScale;     // запоминаем нормальный размер
-        float e = 0f;                         // прошедшее время
+        Vector3 s = transform.localScale;
+        float e = 0f;
         while (e < time)
         {
             e += Time.deltaTime;
-            transform.localScale = s * (1f + 0.15f * Mathf.Sin(e * 20f));
-            yield return null;                // ждём следующий кадр
+            transform.localScale = s * (1f + ShakeAmount * Mathf.Sin(e * ShakeSpeed));
+            yield return null;
         }
-        transform.localScale = s;             // возвращаем нормальный размер
+        transform.localScale = s;
     }
 }

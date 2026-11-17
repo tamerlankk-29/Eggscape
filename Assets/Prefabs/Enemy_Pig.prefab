@@ -222,10 +222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53df812206bf70a4ba48420994f7c0ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySight
-  viewRange: 8
-  fov: 120
-  eyeHeight: 1
-  checkInterval: 0.15
+  stats: {fileID: 11400000, guid: f0189cd7e5ccc2044b1f0fd9ff16d154, type: 2}
   obstacleMask:
     serializedVersion: 2
     m_Bits: 64
@@ -241,9 +238,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61f4a0f259b0fe43b9d96ada09553b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  hp: 3
+  stats: {fileID: 11400000, guid: f0189cd7e5ccc2044b1f0fd9ff16d154, type: 2}
   deathEffect: {fileID: 4319938556889411599, guid: 7b3ca49084fa8664b93bf8b9074a018c, type: 3}
-  effectLifeTime: 2
 --- !u!120 &8010757259949120876
 LineRenderer:
   serializedVersion: 3
@@ -366,17 +362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa82bdbf3c0bec14c932640c85d34791, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChargerAI
-  triggerRange: 7
-  windUp: 0.8
-  lockTime: 0.35
-  dashSpeed: 12
-  dashDistance: 9
-  hitRadius: 2
-  knockback: 4
-  damage: 1
-  stunTime: 1.2
-  cooldown: 1.5
-  walkSpeed: 2
+  stats: {fileID: 11400000, guid: f0189cd7e5ccc2044b1f0fd9ff16d154, type: 2}
   lane: {fileID: 8010757259949120876}
   model: {fileID: 9117552789545244836}
   windUpClip: {fileID: 8300000, guid: 0a4bfa2b83749e84fa5b91c853ffb54a, type: 3}

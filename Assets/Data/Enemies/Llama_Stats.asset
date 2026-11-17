@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13e9374161c4b5f4da41b46e13570132, type: 3}
+  m_Name: Llama_Stats
+  m_EditorClassIdentifier: Assembly-CSharp::ShooterStats
+  maxHp: 3
+  moveSpeed: 2.5
+  turnSpeed: 240
+  viewRange: 10
+  fov: 110
+  eyeHeight: 1
+  preferredMin: 4
+  preferredMax: 8
+  backStep: 3
+  aimRange: 9
+  loseTime: 3
+  aimTime: 0.6
+  shotSpeed: 5
+  cooldown: 2
+  laserLength: 12

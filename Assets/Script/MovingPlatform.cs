@@ -1,10 +1,11 @@
 using UnityEngine;
 
+// Движущаяся платформа. Путь и скорость - раскладка уровня, задаются на объекте в сцене.
 public class MovingPlatform : MonoBehaviour
 {
-    public Vector3 offset = new Vector3(0f, 0f, 6f);
-    public float speed = 0.3f;
-    public Vector3 delta;
+    public Vector3 offset;      // куда едет от стартовой точки
+    public float speed;         // доля пути в секунду
+    public Vector3 delta;       // сдвиг за последний шаг физики (читает Player3D)
 
     Vector3 start, last;
 

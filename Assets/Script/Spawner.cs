@@ -1,27 +1,26 @@
 using UnityEngine;
 
+// Дождь опасностей вокруг яйца. Что, как часто и где - берёт из LevelData.
+// Запускает LevelLoader методом Begin.
 public class Spawner : MonoBehaviour
 {
-    public Hazard[] prefabs;
-    public Transform player;
-    public float interval = 2f;
-    public float range = 5f;
-    public float height = 10f;
-    public float stopZ = 56f;   // НОВОЕ: дальше этой z (арена) камни не падают - там работают враги
+    public Transform player;      // яйцо (уже перетащено в сценах)
+    LevelData level;
 
-    void Start()
+    public void Begin(LevelData data)
     {
-        InvokeRepeating(nameof(Spawn), 1f, interval);
+        level = data;
+        if (level.hazardPrefabs == null || level.hazardPrefabs.Length == 0) return;   // на уровне ничего не падает
+        InvokeRepeating(nameof(Spawn), level.hazardFirstDelay, level.hazardInterval);
     }
 
     void Spawn()
     {
-        if (player.position.z > stopZ) return;   // НОВОЕ: яйцо на арене - ничего не роняем
+        if (player.position.z > level.hazardStopZ) return;   // на арене с врагами ничего не роняем
 
-        float x = player.position.x + Random.Range(-range, range);
-        float z = player.position.z + Random.Range(-range, range);
-
-        Hazard pick = prefabs[Random.Range(0, prefabs.Length)];
-        Instantiate(pick, new Vector3(x, player.position.y + height, z), Quaternion.identity);
+        float x = player.position.x + Random.Range(-level.hazardRange, level.hazardRange);
+        float z = player.position.z + Random.Range(-level.hazardRange, level.hazardRange);
+        Hazard pick = level.hazardPrefabs[Random.Range(0, level.hazardPrefabs.Length)];
+        Instantiate(pick, new Vector3(x, player.position.y + level.hazardHeight, z), Quaternion.identity);
     }
 }
