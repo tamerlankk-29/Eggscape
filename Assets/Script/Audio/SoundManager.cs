@@ -25,13 +25,29 @@ public class SoundManager : MonoBehaviour
         if (I == this) I = null;
     }
 
-    // Каждая новая сцена: всем кнопкам (и в выключенных панелях тоже) добавляем звук клика.
-    // Не надо вручную вешать звук на каждую из 20 кнопок. JUMP и FIRE - не Button, их не трогаем
+    // В редакторе у проекта выключена перезагрузка сцены при Play (Enter Play Mode Options),
+    // и для первой сцены sceneLoaded не приходит. Поэтому первую сцену подключаем ещё и здесь
+    void Start()
+    {
+        HookButtons(SceneManager.GetActiveScene());
+    }
+
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        HookButtons(scene);
+    }
+
+    // Всем кнопкам сцены (и в выключенных панелях тоже) добавляем звук клика.
+    // Не надо вручную вешать звук на каждую из 20 кнопок. JUMP и FIRE - не Button, их не трогаем.
+    // RemoveListener перед AddListener: если сцену подключили дважды, клик всё равно один
+    void HookButtons(Scene scene)
     {
         foreach (GameObject root in scene.GetRootGameObjects())
             foreach (Button b in root.GetComponentsInChildren<Button>(true))
+            {
+                b.onClick.RemoveListener(Click);
                 b.onClick.AddListener(Click);
+            }
     }
 
     public static void Click() { if (I != null) I.ui.PlayVaried(I.clickClip); }

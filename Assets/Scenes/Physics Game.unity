@@ -1428,14 +1428,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d181f247fa4a7847a0caaaef68a90f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawner
-  prefabs:
-  - {fileID: 223044604400744027, guid: 6fbd80bf19c761a4ab572a8f5ba6098a, type: 3}
-  - {fileID: 5487677659933492109, guid: 1cae719bb308359499dbeab01e3a565b, type: 3}
-  - {fileID: 8226156406408580834, guid: 35187a849d8ff9b46b0d2331f0f2118d, type: 3}
   player: {fileID: 1946509392}
-  interval: 2
-  range: 5
-  height: 10
 --- !u!4 &1249769295
 Transform:
   m_ObjectHideFlags: 0
@@ -2488,17 +2481,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72daac8e4c21ea84dbe78669a868c19e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player3D
-  force: 14
-  maxSpeed: 8
-  jumpForce: 5
-  groundCheckDistance: 0.6
-  brake: 4
+  stats: {fileID: 0}
   animator: {fileID: 0}
-  nextScene: Level2
   jumpClip: {fileID: 0}
   coinClip: {fileID: 0}
   coins: 0
   coinsTotal: 0
+  coinsNeeded: 0
   aim: {x: 0, y: 0, z: 1}
   grounded: 0
 --- !u!54 &1946509394
@@ -2540,10 +2529,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40f6b2aa79d40342917b26563442684, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  hp: 3
-  maxHp: 3
+  stats: {fileID: 0}
   hurtClip: {fileID: 8300000, guid: 666e02a60acc8bc46aeadb577d56af6c, type: 3}
   healClip: {fileID: 8300000, guid: 09ff94629c8cc0b4fa8b658148318257, type: 3}
+  hp: 3
 --- !u!82 &1946509396
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2553,7 +2542,7 @@ AudioSource:
   m_GameObject: {fileID: 1946509388}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -5095779817682812934, guid: 5f213189dbf1dc845a250dd180679e34, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
@@ -2653,8 +2642,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a6814ec70575e46bcd6a4c64b577fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shooter
+  stats: {fileID: 0}
   bulletPrefab: {fileID: 786214351895151471, guid: d66c94b228e708446b318a96b8140798, type: 3}
-  cooldown: 0.3
   shootClip: {fileID: 8300000, guid: 6266490e9f568534e92bf26e0d7a8a81, type: 3}
 --- !u!114 &1946509398
 MonoBehaviour:
