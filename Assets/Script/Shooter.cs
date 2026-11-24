@@ -36,6 +36,6 @@ public class Shooter : MonoBehaviour
         Vector3 spawnPos = transform.position + aim * SpawnForward + Vector3.up * SpawnUp;
         GameObject b = Instantiate(bulletPrefab, spawnPos, Quaternion.LookRotation(aim));
         b.GetComponent<Bullet>().Launch(stats.bulletSpeed, stats.bulletLifeTime); // НОВОЕ
-        src.PlayOneShot(shootClip);
+        src.PlayVaried(shootClip);
     }
 }

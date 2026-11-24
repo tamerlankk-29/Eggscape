@@ -16,6 +16,9 @@ public class Boss : MonoBehaviour
     public Transform player;
     public GameObject projectilePrefab;   // Tomato
     public Slider hpBar;
+    public AudioClip windUpClip;          // НОВОЕ (12): звук в начале предупреждения (дрожь)
+
+    AudioSource src;                      // НОВОЕ (12): AudioSource на корове, Output = SFX
 
     int hp;
     bool dead;
@@ -25,6 +28,7 @@ public class Boss : MonoBehaviour
         hp = stats.maxHp;
         hpBar.maxValue = stats.maxHp;
         hpBar.value = hp;
+        src = GetComponent<AudioSource>();
         StartCoroutine(AttackLoop());
     }
 
@@ -80,6 +84,7 @@ public class Boss : MonoBehaviour
 
     IEnumerator Telegraph(float time)
     {
+        src.PlayVaried(windUpClip);       // НОВОЕ (12): звук в первый кадр предупреждения
         Vector3 s = transform.localScale;
         float e = 0f;
         while (e < time)

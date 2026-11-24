@@ -14,8 +14,10 @@ public class LevelRecord
 [System.Serializable]
 public class GameSettings
 {
-    public float volume = 1f;        // 0..1, общая громкость игры
-    public bool music = true;        // музыка в меню
+    public float volume = 1f;        // 0..1, общая громкость (MasterVol в микшере)
+    public float musicVolume = 0.4f; // НОВОЕ (12): 0..1, музыка (MusicVol). 0.4 = -8 dB: музыка под эффектами
+    public float sfxVolume = 0.7f;   // НОВОЕ (12): 0..1, эффекты (SFXVol). 0.7 = -3 dB
+    public bool music = true;        // галочка Music: выкл = музыка молчит во всей игре
     public bool fullscreen = true;
     public string playerName = "";
     public int colorIndex = 0;
@@ -23,8 +25,9 @@ public class GameSettings
     // Применить к игре (при запуске и после сброса)
     public void Apply()
     {
-        AudioListener.volume = volume;
+        AudioListener.volume = 1f;       // НОВОЕ (12): громкость теперь в микшере, не в AudioListener
         Screen.fullScreen = fullscreen;
+        VolumeSettings.Apply();          // три громкости в dB -> AudioMixer
     }
 }
 

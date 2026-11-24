@@ -50,7 +50,7 @@ public class Player3D : MonoBehaviour
         {
             rb.AddForce(Vector3.up * stats.jumpForce, ForceMode.Impulse);   // НОВОЕ: stats
             animator.SetTrigger("Jump");
-            src.PlayOneShot(jumpClip);
+            src.PlayVaried(jumpClip);
         }
     }
 
@@ -105,7 +105,7 @@ public class Player3D : MonoBehaviour
         {
             Destroy(other.gameObject);
             coins++;
-            src.PlayOneShot(coinClip);
+            src.PlayVaried(coinClip);
         }
 
         if (other.CompareTag("Exit"))

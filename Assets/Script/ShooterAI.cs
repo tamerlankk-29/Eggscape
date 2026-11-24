@@ -100,7 +100,7 @@ public class ShooterAI : MonoBehaviour
     {
         GameObject p = Instantiate(projectilePrefab, muzzle.position, Quaternion.LookRotation(aimDir));
         p.GetComponent<Rigidbody>().linearVelocity = aimDir * stats.shotSpeed;
-        if (shootClip != null) src.PlayOneShot(shootClip);
+        if (shootClip != null) src.PlayVaried(shootClip);
     }
 
     void SetState(State next)
@@ -112,7 +112,7 @@ public class ShooterAI : MonoBehaviour
 
         if (next != State.KeepDistance) agent.ResetPath();
         laser.enabled = next == State.Aim;
-        if (next == State.Aim && aimClip != null) src.PlayOneShot(aimClip);
+        if (next == State.Aim && aimClip != null) src.PlayVaried(aimClip);
         if (anim != null) anim.CrossFade(next == State.KeepDistance ? "Walk" : "Idle", 0.15f);
         if (stateLabel != null) stateLabel.text = next.ToString();
     }

@@ -105,7 +105,7 @@ public class ChargerAI : MonoBehaviour
         sight.PlayerHealth.TakeDamage(stats.damage);
         Rigidbody rb = sight.Player.GetComponent<Rigidbody>();
         if (rb != null) rb.AddForce(dashDir * stats.knockback + Vector3.up * stats.knockUp, ForceMode.Impulse);
-        if (hitClip != null) src.PlayOneShot(hitClip);
+        if (hitClip != null) src.PlayVaried(hitClip);
     }
 
     void SetState(State next)
@@ -116,7 +116,7 @@ public class ChargerAI : MonoBehaviour
         lane.enabled = next == State.WindUp;
         agent.ResetPath();
 
-        if (next == State.WindUp && windUpClip != null) src.PlayOneShot(windUpClip);
+        if (next == State.WindUp && windUpClip != null) src.PlayVaried(windUpClip);
         if (next == State.Dash) hitDone = false;
         bool goingHome = false;
         if (next == State.Idle)
