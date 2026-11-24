@@ -73,12 +73,16 @@ public class LevelLoader : MonoBehaviour
                   + secondsLeft * level.pointsPerSecondLeft;
         Debug.Log("Level " + level.number + " complete: score " + score + ", time " + elapsed.ToString("0.0") + " s");
         SaveSystem.LevelCompleted(level.number, score, elapsed);
+        SoundManager.Win();                   // НОВОЕ (12): звук победы доиграет уже в следующей сцене
         SceneManager.LoadScene(level.nextScene);
     }
 
+    // Проигрыш: упали в пропасть или кончились жизни (Health)
     public void Restart()
     {
+        if (finished) return;                 // НОВОЕ (12): звук проигрыша не играет дважды
         finished = true;
+        SoundManager.Lose();                  // НОВОЕ (12)
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

@@ -64,6 +64,8 @@ public static class SaveSystem
         if (d.records == null) d.records = new List<LevelRecord>();
         if (d.settings == null) d.settings = new GameSettings();
         d.settings.volume = Mathf.Clamp01(d.settings.volume);           // громкость строго 0..1
+        d.settings.musicVolume = Mathf.Clamp01(d.settings.musicVolume); // НОВОЕ (12)
+        d.settings.sfxVolume = Mathf.Clamp01(d.settings.sfxVolume);     // НОВОЕ (12)
         return d;
     }
 

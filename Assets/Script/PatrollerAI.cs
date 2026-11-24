@@ -115,7 +115,7 @@ public class PatrollerAI : MonoBehaviour
             agent.SetDestination(route[point]);
 
         if (warning != null) warning.SetActive(next == State.Attack);
-        if (next == State.Attack && windUpClip != null) src.PlayOneShot(windUpClip);
+        if (next == State.Attack && windUpClip != null) src.PlayVaried(windUpClip);
         if (anim != null)
             anim.CrossFade(next == State.Patrol ? "Walk" : next == State.Chase ? "Run" : "Idle", 0.15f);
         if (stateLabel != null) stateLabel.text = next.ToString();

@@ -19,6 +19,7 @@ public class PauseMenu : MonoBehaviour
         pausePanel.SetActive(paused);
         pauseButton.SetActive(!paused);
         Time.timeScale = paused ? 0f : 1f;   // physics and movement stop
+        VolumeSettings.SetPaused(paused);     // week 12: Paused snapshot (music quieter + lowpass)
     }
 
     public void Restart()
