@@ -43,3 +43,13 @@ Claude · bug: Spawner crashed with a null object · Claude found that Level_02 
 Claude · menu · got steps for the level select, the reset confirm panel and the settings save · built the UI in Unity myself, fixed the unreadable reset panel myself
 Claude · Unity error with GPU Resident Drawer on rocks · got the cause (Unity 6 bug, PC render asset) · turned it off myself
 Tests · live balance, restart test via Unity Remote on iPhone, broken save.json · did and recorded them myself
+
+=== Assignment 12 - Sound Pass ===
+Tool: Claude (claude.ai, agent with access to my project folder)
+Asked: step-by-step guide for the sound pass and the audio scripts.
+Claude wrote: Sfx.cs, MusicManager.cs, SoundManager.cs, VolumeSettings.cs, SceneMusic.cs,
+  Editor/AudioCheck.cs; edited SaveData, SaveSystem, ProfileSettings, PauseMenu, Health,
+  LevelLoader, Boss and PlayOneShot -> PlayVaried in Player3D, Shooter and enemy AI.
+  Converted the two Pixabay MP3 tracks to OGG.
+I did: all sounds in jfxr, the AudioMixer (groups, exposed params, snapshots), the Audio prefab,
+  SceneMusic in every scene, Output of every AudioSource, the settings sliders, tests and video.

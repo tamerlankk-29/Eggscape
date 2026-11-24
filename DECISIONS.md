@@ -15,3 +15,9 @@
 2026-11-17  Save: JsonUtility (not BinaryFormatter) with try/catch, a version field and defaults; written to save.tmp first, then swapped in. Saved after a level, when settings close and in OnApplicationPause. Settings moved from PlayerPrefs into save.json.
 2026-11-17  Bug: ArgumentException "The Object you want to instantiate is null" in Spawner. The Hazard Prefabs list in Level_02 had 3 empty slots. Filled it with Bomb, Rock, Heart. Claude's Spawner did not check for empty slots, so one empty field in a data asset crashed the rain.
 2026-11-17  Claude wrote the 35 script files into the project; I created the 16 assets, wired prefabs and scenes, built the level select and reset panels.
+## Week 12 - Sound Pass
+2026-11-24  Asked Claude for the week 12 audio code (MusicManager, SoundManager, VolumeSettings, pitch helper). It found that horse_windup (0.08 s) and llama_aim (0.03 s) were too short to hear before the attack; I remade them in jfxr at 0.3-0.5 s.
+2026-11-24  Win, lose and death sounds were cut off because the scene reloads at once. They now play from the Audio object that is never destroyed, and death waits 0.7 s before the restart.
+2026-11-24  Kept save version 1 when adding musicVolume and sfxVolume: a new version would make Repair wipe all progress. Old save files just get the defaults.
+2026-11-24  Music at full volume covered the enemy wind-ups. Default mix is now Music -8 dB, SFX -3 dB (0.4 and 0.7 on the sliders).
+2026-11-24  Deleted 'Subwoofer Lullaby' (C418, Minecraft) from Assets: unused and no free license. Every sound in README now has a source and license.
